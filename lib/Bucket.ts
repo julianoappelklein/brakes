@@ -1,9 +1,35 @@
-'use strict';
+"use strict";
 
-const consts = require('./consts');
+import consts from "./consts";
 
-class Bucket {
-  constructor(cumStats) {
+export interface CummulativeStats {
+  countTotal: number;
+  countTotalDeriv: number;
+  countFailure: number;
+  countFailureDeriv: number;
+  countSuccess: number;
+  countSuccessDeriv: number;
+  countShortCircuited: number;
+  countShortCircuitedDeriv: number;
+  countTimeout: number;
+  countTimeoutDeriv: number;
+  latencyMean: number;
+  percentiles: { [key: number]: number };
+}
+
+export default class Bucket {
+  failed: number;
+  successful: number;
+  total: number;
+  shortCircuited: number;
+  timedOut: number;
+  requestTimes: Array<number>;
+  latencyMean: number;
+  percentiles: { [key: string]: number };
+
+  cummulativeStats: CummulativeStats;
+
+  constructor(cumStats: CummulativeStats) {
     this.failed = 0;
     this.successful = 0;
     this.total = 0;
@@ -14,7 +40,7 @@ class Bucket {
   }
 
   /* Calculate % of a given field */
-  percent(field) {
+  percent(field: string) {
     // eslint-disable-next-line no-prototype-builtins
     if (!Object(this).hasOwnProperty(field)) {
       throw new Error(consts.INVALID_BUCKET_PROP);
@@ -28,7 +54,7 @@ class Bucket {
   }
 
   /* Register a failure */
-  failure(runTime) {
+  failure(runTime: number) {
     this.total++;
     this.cummulativeStats.countTotal++;
     this.cummulativeStats.countTotalDeriv++;
@@ -39,7 +65,7 @@ class Bucket {
   }
 
   /* Register a success */
-  success(runTime) {
+  success(runTime: number) {
     this.total++;
     this.cummulativeStats.countTotal++;
     this.cummulativeStats.countTotalDeriv++;
@@ -57,7 +83,7 @@ class Bucket {
   }
 
   /* Register a timeout */
-  timeout(runTime) {
+  timeout(runTime: number) {
     this.total++;
     this.cummulativeStats.countTotal++;
     this.cummulativeStats.countTotalDeriv++;
@@ -67,5 +93,3 @@ class Bucket {
     this.requestTimes.push(runTime);
   }
 }
-
-module.exports = Bucket;

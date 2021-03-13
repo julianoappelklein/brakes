@@ -1,9 +1,10 @@
-'use strict';
+import consts from './consts';
 
-const consts = require('./consts');
+export default class CircuitBrokenError extends Error {
+  
+  totals: any;
 
-class CircuitBrokenError extends Error {
-  constructor(name, totals, threshold) {
+  constructor(name: string, totals: any, threshold: number) {
     super();
 
     let prefix = '';
@@ -17,5 +18,3 @@ class CircuitBrokenError extends Error {
     this.name = name;
   }
 }
-
-module.exports = CircuitBrokenError;
